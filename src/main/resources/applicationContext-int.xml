@@ -12,20 +12,34 @@
     <int:splitter input-channel="inboundChannel" output-channel="taskServiceChannel"
                   ref="messageSplitter" method="splitting" />
 
-    <int:channel id="taskServiceChannel" />
+    <bean id="taskServiceExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="${edge.messaging.service.core:16}" />
+        <property name="maxPoolSize" value="${edge.messaging.service.max:16}" />
+        <property name="queueCapacity" value="${edge.messaging.service.capacity:2048}" />
+        <property name="threadNamePrefix" value="SampleWorker-" />
+    </bean>
 
-    <int:transformer input-channel="taskServiceChannel" output-channel="aggregateChannel"
-                     ref="messageTransformer" method="transform" />
+    <bean id="expireTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+        <property name="poolSize" value="4" />
+        <property name="threadNamePrefix" value="ExpireWorker-" />
+    </bean>
 
-    <int:channel id="aggregateChannel" />
-    <int:channel id="resultingChannel" />
+    <!-- ServiceExecutorChannel is the channel used to accept the EdgePolicyMessages -->
+    <bean id="taskServiceChannel" class="org.springframework.messaging.support.ExecutorSubscribableChannel">
+        <constructor-arg ref="taskServiceExecutor" />
+    </bean>
 
-    <int:aggregator id="sampleAggregator"
-                    input-channel="aggregateChannel"
-                    output-channel="resultingChannel"
-                    send-timeout="1000"
-                    ref="messageAggregator" method="aggregate" />
+    <int:chain input-channel="taskServiceChannel">
+        <int:transformer ref="messageTransformer" method="transform" />
+        <int:aggregator ref="messageAggregator" method="aggregate" discard-channel="discardChannel"
+                        group-timeout="100" send-partial-result-on-expiry="false"
+                        scheduler="expireTaskExecutor" />
+        <int:service-activator ref="messageLoggingService" method="accept" />
+    </int:chain>
 
-    <int:service-activator input-channel="resultingChannel" ref="messageLoggingService" method="accept" />
+    <int:channel id="discardChannel" />
+
+    <int:service-activator id="discardMessageService" input-channel="discardChannel"
+                           ref="messageDiscardingService" method="accept" />
 
 </beans>
