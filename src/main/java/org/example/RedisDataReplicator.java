@@ -45,12 +45,16 @@ public class RedisDataReplicator {
         }
     }
 
-    private static RedissonClient createRedisClient(String hostname) {
+    static RedissonClient createRedisClient(String hostname) {
         Config config = new Config();
         config.useSingleServer()
                 .setDatabase(0)
                 .setAddress(String.format("redis://%s:6379", hostname));
         return Redisson.create(config);
+    }
+
+    static RBucket<byte[]> getRedisBucket(RedissonClient redissonClient, String keyPrefix, String tenantId) {
+        return redissonClient.getBucket(String.format("%s_%s", keyPrefix, tenantId));
     }
 
     private static void copyByBucket(RedissonClient sourceClient, RedissonClient destClient, String keyPrefix, String tenantId) {
@@ -59,9 +63,5 @@ public class RedisDataReplicator {
         if (sourceDataBucket.get() != null) {
             destDataBucket.set(sourceDataBucket.get());
         }
-    }
-
-    private static RBucket<byte[]> getRedisBucket(RedissonClient redissonClient, String keyPrefix, String tenantId) {
-        return redissonClient.getBucket(String.format("%s_%s", keyPrefix, tenantId));
     }
 }
