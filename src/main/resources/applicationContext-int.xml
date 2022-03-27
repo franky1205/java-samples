@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd">
+
+    <int:gateway id="sampleGateway" service-interface="org.example.messaging.SampleGateway"
+        default-request-timeout="300" default-request-channel="inboundChannel" />
+
+    <int:channel id="inboundChannel" />
+
+    <int:splitter input-channel="inboundChannel" output-channel="taskServiceChannel"
+                  ref="messageSplitter" method="splitting" />
+
+    <int:channel id="taskServiceChannel" />
+
+    <int:transformer input-channel="taskServiceChannel" output-channel="aggregateChannel"
+                     ref="messageTransformer" method="transform" />
+
+    <int:channel id="aggregateChannel" />
+    <int:channel id="resultingChannel" />
+
+    <int:aggregator id="sampleAggregator"
+                    input-channel="aggregateChannel"
+                    output-channel="resultingChannel"
+                    send-timeout="1000"
+                    ref="messageAggregator" method="aggregate" />
+
+    <int:service-activator input-channel="resultingChannel" ref="messageLoggingService" method="accept" />
+
+</beans>
