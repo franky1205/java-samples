@@ -19,12 +19,13 @@
         <property name="threadNamePrefix" value="SampleWorker-" />
     </bean>
 
+    <!-- expireTaskExecutor is the ThreadPoolTaskScheduler used to deal with the expired messages -->
     <bean id="expireTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
         <property name="poolSize" value="4" />
         <property name="threadNamePrefix" value="ExpireWorker-" />
     </bean>
 
-    <!-- ServiceExecutorChannel is the channel used to accept the EdgePolicyMessages -->
+    <!-- taskServiceChannel is the executor subscribable channel used to accept the splitting messages -->
     <bean id="taskServiceChannel" class="org.springframework.messaging.support.ExecutorSubscribableChannel">
         <constructor-arg ref="taskServiceExecutor" />
     </bean>
