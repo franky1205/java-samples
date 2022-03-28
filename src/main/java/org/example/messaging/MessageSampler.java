@@ -27,7 +27,7 @@ public class MessageSampler {
         log.info("Start publish scheduled messages...");
         final AtomicInteger counter = new AtomicInteger(0);
         executorService.scheduleAtFixedRate(
-                () -> sampleGateway.perform("abc,def,ghi," + counter.incrementAndGet()),
+                () -> sampleGateway.perform("abc,def,ghi," + counter.incrementAndGet(), "ABC"),
                 5, 10, TimeUnit.SECONDS);
     }
 }

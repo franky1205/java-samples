@@ -1,6 +1,7 @@
 package org.example.messaging;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessageLoggingService {
 
-    public void accept(String message) {
-        log.info("Message Payload: [{}]", message);
+    public void accept(Message<String> message) {
+        log.info("Message Payload: [{}] and Headers: [{}]", message.getPayload(), message.getHeaders());
     }
 }

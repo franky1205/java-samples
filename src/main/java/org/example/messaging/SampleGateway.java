@@ -5,5 +5,7 @@ package org.example.messaging;
  */
 public interface SampleGateway {
 
-    void perform(String message);
+    String MSG_ID_HEADER = "MSG_ID";
+
+    void perform(String message, String id);
 }

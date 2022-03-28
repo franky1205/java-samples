@@ -5,7 +5,11 @@
             http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd">
 
     <int:gateway id="sampleGateway" service-interface="org.example.messaging.SampleGateway"
-        default-request-timeout="300" default-request-channel="inboundChannel" />
+        default-request-timeout="300" default-request-channel="inboundChannel">
+        <int:method name="perform" payload-expression="#args[0]">
+            <int:header name="MSG_ID" expression="#args[1]" />
+        </int:method>
+    </int:gateway>
 
     <int:channel id="inboundChannel" />
 
@@ -33,7 +37,7 @@
     <int:chain input-channel="taskServiceChannel">
         <int:transformer ref="messageTransformer" method="transform" />
         <int:aggregator ref="messageAggregator" method="aggregate" discard-channel="discardChannel"
-                        group-timeout="100" send-partial-result-on-expiry="false"
+                        group-timeout="10000" send-partial-result-on-expiry="false"
                         scheduler="expireTaskExecutor" />
         <int:service-activator ref="messageLoggingService" method="accept" />
     </int:chain>
