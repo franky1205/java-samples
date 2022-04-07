@@ -5,6 +5,7 @@ import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -14,7 +15,8 @@ public class RedisDataReplicator {
 
     public static void main(String[] args) {
         final String tenantId = "dqtdc";
-        RedissonClient source = createRedisClient("10.195.61.185");
+        RedissonClient source = createRedisClient(Optional.ofNullable(System.getProperty("redis.source.ip"))
+                .orElseThrow(() -> new IllegalArgumentException("Cannot find source redis ip with system property: [redis.source.ip]")));
         RedissonClient destination = createRedisClient("127.0.0.1");
 
         try {
