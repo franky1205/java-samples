@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ImportResource;
  * @author Frankie Chao
  */
 @SpringBootApplication
-@ComponentScan("org.example.messaging")
+@ComponentScan({"org.example.messaging", "org.example.config"})
 @ImportResource("classpath:applicationContext-int.xml")
 public class SampleApplication {
 

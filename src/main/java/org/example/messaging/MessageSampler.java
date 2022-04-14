@@ -28,6 +28,6 @@ public class MessageSampler {
         final AtomicInteger counter = new AtomicInteger(0);
         executorService.scheduleAtFixedRate(
                 () -> sampleGateway.perform("abc,def,ghi," + counter.incrementAndGet(), "ABC"),
-                5, 10, TimeUnit.SECONDS);
+                5, 10, TimeUnit.MINUTES);
     }
 }
