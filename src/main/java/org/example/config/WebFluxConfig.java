@@ -1,5 +1,6 @@
 package org.example.config;
 
+import org.example.websocket.InboundMessageListenerImpl;
 import org.example.websocket.NodeManagerWebSocketHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +18,17 @@ import java.util.Map;
 public class WebFluxConfig {
 
     @Bean
-    public HandlerMapping handlerMapping() {
-        return new SimpleUrlHandlerMapping(Map.of("/nodeManagement", new NodeManagerWebSocketHandler()), -1);
+    public HandlerMapping handlerMapping(NodeManagerWebSocketHandler nodeManagerWebSocketHandler) {
+        return new SimpleUrlHandlerMapping(Map.of("/nodeManagement", nodeManagerWebSocketHandler), -1);
+    }
+
+    @Bean
+    public NodeManagerWebSocketHandler nodeManagerWebSocketHandler() {
+        return new NodeManagerWebSocketHandler();
+    }
+
+    @Bean
+    public InboundMessageListenerImpl inboundMessageListener() {
+        return new InboundMessageListenerImpl();
     }
 }
