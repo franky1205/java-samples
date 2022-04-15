@@ -1,0 +1,9 @@
+server:
+  ssl:
+    key-store: classpath:keystore/baeldung.p12
+    key-store-password: keystore
+    key-store-type: pkcs12
+    key-alias: baeldung
+    key-password: keystore
+    enabled: true
+  port: 8443
